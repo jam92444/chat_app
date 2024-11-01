@@ -10,5 +10,7 @@
 body{
   font-family: "Poppins", sans-serif;
   overflow-x: hidden;
-  overflow-y: scroll;
+}
+img.dot{
+  width: 15px !important;
 }
