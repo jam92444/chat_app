@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { getFirestore, setDoc, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, setDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const firebaseConfig = {
@@ -39,9 +39,8 @@ const signup = async (username, email, password) => {
       lastSeen: Date.now(),
     });
 
-    // Update with chatData
-    await updateDoc(doc(db, "users", user.uid), {
-      chatData: [],
+    await setDoc(doc(db, "chats", user.uid), {
+      chatsData: [],
     });
   } catch (error) {
     console.log(error.message);
