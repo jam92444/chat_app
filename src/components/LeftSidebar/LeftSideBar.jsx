@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -27,7 +28,7 @@ const LeftSideBar = () => {
     messages,
     setMessages,
     chatUser,
-    setChatUser,
+    setChatUser,chatVisible,setChatVisible
   } = useContext(AppContext);
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -41,25 +42,28 @@ const LeftSideBar = () => {
         const userRef = collection(db, "users");
         const q = query(userRef, where("username", "==", input.toLowerCase()));
         const querySnap = await getDocs(q);
-        if (!querySnap.empty && querySnap.docs[0].data().id !== userData.id) {
-          let userExist = false;
-          chatData.map((user) => {
-            if (user.rId === querySnap.docs[0].data().id) {
-              userExist = true;
+        
+        if (!querySnap.empty) {
+          const userDoc = querySnap.docs[0].data();
+          if (userDoc.id !== userData.id) {
+            const userExist = chatData.some((user) => user.rId === userDoc.id);
+            if (!userExist) {
+              setUser(userDoc); // Successfully set the user data
             }
-          });
-          if (!userExist) {
-            setUser(querySnap.docs[0].data());
+          } else {
+            setUser(false); // Handle the case where the user is the same as the current user
           }
         } else {
-          setUser(false);
+          setUser(false); // No user found in the database
         }
       } else {
-        setShowSearch(false);
+        setShowSearch(false); // Clear the search results
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error.message);
+    }
   };
-
+  
   //adding chat to the users
   const addChat = async () => {
     const messagesRef = collection(db, "messages");
@@ -92,6 +96,20 @@ const LeftSideBar = () => {
           messageSeen: true,
         }),
       });
+
+      const  uSnap = await getDoc(doc(db,"users",user.id));
+      const uData = uSnap.data();
+      setChat({
+        messageId:newMessageRef.id,
+        lastMessage:"",
+        rId:user.id,
+        updatedAt:Date.now(),
+        messageSeen:true,
+        userData:uData
+      });
+      setShowSearch(false);
+      setChatVisible(true);
+
     } catch (error) {
       toast.error(error.message);
       console.error(error.message);
@@ -100,11 +118,41 @@ const LeftSideBar = () => {
 
   //creating a chat for user ....
   const setChat = async (item) => {
-    setMessageId(item.messageId);
-    setChatUser(item)
+    try {
+       setMessageId(item.messageId);
+    setChatUser(item);
+    const userChatRef = doc(db,'chats',userData.id);
+    const userChatsSnapShot = await getDoc(userChatRef);
+    const userChatsData = userChatsSnapShot.data();
+    const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId == item.messageId)
+    userChatsData.chatsData[chatIndex].messageSeen = true;
+    await updateDoc(userChatRef,{
+      chatsData:userChatsData.chatsData
+    })
+    setChatVisible(true)
+    } catch (error) {
+      toast.error(error.message);
+      console.error(error.message);
+    }
+   
   };
+
+  useEffect(() => {
+    const updateChatUserData = async () => {
+      if(chatUser){
+        const userRef = doc(db,"users",chatUser.userData.id);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        setChatUser(prev=>({...prev,userData:userData}))
+      }
+      
+    }
+  
+   updateChatUserData();
+  }, [chatData])
+  
   return (
-    <div className="ls">
+    <div className={`ls ${chatVisible ? "hidden" : ""}`}>
       <div className="ls-top">
         <div className="ls-nav">
           <img className="logo" src={assets.logo} alt="Logo" />
@@ -123,6 +171,7 @@ const LeftSideBar = () => {
             onChange={inputHandler}
             type="text"
             placeholder="Search here..."
+            
           />
         </div>
       </div>
@@ -134,7 +183,7 @@ const LeftSideBar = () => {
           </div>
         ) : (
           chatData.map((item, index) => (
-            <div onClick={() => setChat(item)} key={index} className="friends">
+            <div onClick={() => setChat(item)} key={index} className={`friends ${item.messageSeen || item.messageId === messageId ? "" : "border"}  `}>
               <img src={item.userData.avatar} alt="Profile" />
               <div>
                 <p>{item.userData.name}</p>

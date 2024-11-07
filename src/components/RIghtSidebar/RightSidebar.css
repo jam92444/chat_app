@@ -64,3 +64,9 @@
     padding: 10px 65px;
     border-radius: 20px;
 }
+
+@media (max-width:900px){
+    .rs{
+        display: none;
+    }
+}

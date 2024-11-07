@@ -14,3 +14,9 @@ body{
 img.dot{
   width: 15px !important;
 }
+@media (max-width:900px) {
+  .hidden{
+    display: none;
+  }
+  
+}

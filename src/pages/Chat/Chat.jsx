@@ -6,7 +6,7 @@ import RightSidebar from "../../components/RIghtSidebar/RightSidebar";
 import { AppContext } from "../../context/AppContext";
 
 const Chat = () => {
-  const { chatData, userData } = useContext(AppContext);
+  const { chatData, userData, } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(()=>{

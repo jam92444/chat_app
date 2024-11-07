@@ -76,8 +76,8 @@
     gap: 5px;
     padding: 0px 15px;
 }
+
 .r-msg{
-    /* display: flex; */
     flex-direction: row-reverse;
     justify-content: start;
 }
@@ -98,6 +98,7 @@
     text-align: center;
     font-size: 9px;
 }
+
 .msg-img{
     max-width: 230px ;
     margin-bottom: 30px;
@@ -119,4 +120,22 @@
     font-size: 20px;
     font-weight: 500;
     color: #383838;
+}
+.chat-box .arrow{
+    display: none;
+}
+@media (max-width: 900px){
+    .chat-box{
+        width: 100%;
+        justify-content: center;
+    }
+    .hidden{
+        display: none;
+    }
+    .chat-box .help{
+        display: none;
+    }
+    .chat-box .arrow{
+        display: block;
+    }
 }
