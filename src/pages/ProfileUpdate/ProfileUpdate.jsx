@@ -105,7 +105,7 @@ const ProfileUpdate = () => {
           <button type="submit">Save</button>
         </form>
         <img
-          className="profile-pic"
+          className="profile-pic hidden"
           src={image ? URL.createObjectURL(image) : prevImage? prevImage: assets.logo_icon}
           alt=""
         />
