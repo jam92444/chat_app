@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
-
-import 
 import {
   arrayUnion,
   collection,
