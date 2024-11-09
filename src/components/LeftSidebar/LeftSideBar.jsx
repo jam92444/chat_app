@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
+
+import 
 import {
   arrayUnion,
   collection,
@@ -14,7 +16,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db,logout } from "../../config/firebase";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 
@@ -161,7 +163,7 @@ const LeftSideBar = () => {
             <div className="sub-menu">
               <p onClick={() => navigate("/profile")}>Edit profile</p>
               <hr />
-              <p>Logout</p>
+              <p onClick={()=>logout()}>Logout</p>
             </div>
           </div>
         </div>
